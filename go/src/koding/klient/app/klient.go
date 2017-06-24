@@ -359,8 +359,7 @@ func NewKlient(conf *KlientConfig) (*Klient, error) {
 			Interval:       conf.UpdateInterval,
 			CurrentVersion: conf.Version,
 			KontrolURL:     k.Config.KontrolURL,
-			// MountEvents:    mountEvents,
-			Log: k.Log,
+			Log:            k.Log,
 		},
 		logUploadDelay: 3 * time.Minute,
 		presence: &presence.Client{
@@ -450,9 +449,6 @@ func (k *Klient) RegisterMethods() {
 	k.handleFunc("klient.share", k.collab.Share)
 	k.handleFunc("klient.unshare", k.collab.Unshare)
 	k.handleFunc("klient.shared", k.collab.Shared)
-
-	// Adds the remote.* methods, depending on OS.
-	k.addRemoteHandlers()
 
 	// SSH keys
 	k.handleWithSub("sshkeys.list", sshkeys.List)
