@@ -1,11 +1,11 @@
-package main
+package cli
 
 import (
-	"koding/kites/metrics"
+	"strings"
 	"testing"
 	"time"
 
-	cli "gopkg.in/urfave/cli.v1"
+	"koding/kites/metrics"
 )
 
 func BenchmarkMetricsOverheadTags(b *testing.B) {
@@ -28,22 +28,9 @@ func BenchmarkMetricsOverheadSend(b *testing.B) {
 	}
 }
 
-func BenchmarkMetricsOverheadAll(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		m, err := metrics.New("kd")
-		if err != nil {
-			b.Fatal(err.Error())
-		}
-		actionFn := func(*cli.Context) error {
-			return nil
-		}
-		wrappedActionFn := metrics.WrapCLIAction(m.Datadog, actionFn, "", generateTagsForCLI)
-		c := &cli.Context{
-			Command: cli.Command{
-				Name: "full name",
-			},
-		}
-		wrappedActionFn(c)
-		m.Close()
-	}
+func generateTagsForCLI(full string) []string {
+	return append(
+		CommandPathTags(strings.Split(full, " ")...),
+		ApplicationInfoTags()...,
+	)
 }
